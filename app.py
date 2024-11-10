@@ -18,23 +18,17 @@ st.set_page_config(
 )
 
 # Main page heading
-st.title("Object Detection And Tracking using YOLOv8")
+st.title("Object Detection")
 
 # Sidebar
 st.sidebar.header("ML Model Config")
 
-# Model Options
-model_type = st.sidebar.radio(
-    "Select Task", ['Detection', 'Segmentation'])
-
+# Model Confidence Slider
 confidence = float(st.sidebar.slider(
     "Select Model Confidence", 25, 100, 40)) / 100
 
-# Selecting Detection Or Segmentation
-if model_type == 'Detection':
-    model_path = Path(settings.DETECTION_MODEL)
-elif model_type == 'Segmentation':
-    model_path = Path(settings.SEGMENTATION_MODEL)
+# Load Detection Model Only
+model_path = Path(settings.DETECTION_MODEL)
 
 # Load Pre-trained ML Model
 try:
@@ -48,6 +42,7 @@ source_radio = st.sidebar.radio(
     "Select Source", settings.SOURCES_LIST)
 
 source_img = None
+
 # If image is selected
 if source_radio == settings.IMAGE:
     source_img = st.sidebar.file_uploader(
@@ -91,20 +86,10 @@ if source_radio == settings.IMAGE:
                         for box in boxes:
                             st.write(box.data)
                 except Exception as ex:
-                    # st.write(ex)
                     st.write("No image is uploaded yet!")
-
-elif source_radio == settings.VIDEO:
-    helper.play_stored_video(confidence, model)
 
 elif source_radio == settings.WEBCAM:
     helper.play_webcam(confidence, model)
-
-elif source_radio == settings.RTSP:
-    helper.play_rtsp_stream(confidence, model)
-
-elif source_radio == settings.YOUTUBE:
-    helper.play_youtube_video(confidence, model)
 
 else:
     st.error("Please select a valid source type!")
