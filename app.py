@@ -56,11 +56,11 @@ if source_radio == settings.IMAGE:
                 default_image_path = str(settings.DEFAULT_IMAGE)
                 default_image = PIL.Image.open(default_image_path)
                 st.image(default_image_path, caption="Default Image",
-                         use_column_width=True)
+                         use_container_width=True)
             else:
                 uploaded_image = PIL.Image.open(source_img)
                 st.image(source_img, caption="Uploaded Image",
-                         use_column_width=True)
+                         use_container_width=True)
         except Exception as ex:
             st.error("Error occurred while opening the image.")
             st.error(ex)
@@ -71,7 +71,7 @@ if source_radio == settings.IMAGE:
             default_detected_image = PIL.Image.open(
                 default_detected_image_path)
             st.image(default_detected_image_path, caption='Detected Image',
-                     use_column_width=True)
+                     use_container_width=True)
         else:
             if st.sidebar.button('Detect Objects'):
                 res = model.predict(uploaded_image,
@@ -80,7 +80,7 @@ if source_radio == settings.IMAGE:
                 boxes = res[0].boxes
                 res_plotted = res[0].plot()[:, :, ::-1]
                 st.image(res_plotted, caption='Detected Image',
-                         use_column_width=True)
+                         use_container_width=True)
                 try:
                     with st.expander("Detection Results"):
                         for box in boxes:
