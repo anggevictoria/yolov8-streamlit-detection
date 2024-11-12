@@ -16,12 +16,12 @@ SOURCES_LIST = [IMAGE, WEBCAM]
 
 # Images config
 IMAGES_DIR = ROOT / 'images'
-DEFAULT_IMAGE = IMAGES_DIR / 'office_4.jpg'
-DEFAULT_DETECT_IMAGE = IMAGES_DIR / 'office_4_detected.jpg'
+DEFAULT_IMAGE = IMAGES_DIR / 'CENAR.jpg'
+DEFAULT_DETECT_IMAGE = IMAGES_DIR / 'CENAR_detected.png'
 
 # ML Model config
 MODEL_DIR = ROOT / 'weights'
-DETECTION_MODEL = MODEL_DIR / 'best.pt'
+DETECTION_MODEL = MODEL_DIR / 'yolov8n.pt'
 
 # Webcam
 WEBCAM_PATH = 0

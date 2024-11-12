@@ -17,7 +17,7 @@ def _display_detected_frames(conf, model, st_frame, image, is_display_tracking=N
         res = model.predict(image, conf=conf)
 
     res_plotted = res[0].plot()
-    st_frame.image(res_plotted, caption='Detected Video', channels="BGR", use_column_width=True)
+    st_frame.image(res_plotted, caption='Detected Video', channels="BGR", use_container_width=True)
 
 
 def play_webcam(conf, model):
