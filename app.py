@@ -109,24 +109,55 @@ else:
 
 
 
+# Add a space to separate sections visually
+st.sidebar.markdown("---")
 
-# Display the chat input widget
-user_query = st.sidebar.chat_input("Type your message here")
+# Function to handle user queries and chat response
+def get_response(user_query, chat_history):
+    template = """
+    You are a helpful assistant. Answer the following questions considering the history of the conversation:
 
-# Container to display chat history
-if 'chat_history' not in st.session_state:
-    st.session_state.chat_history = []
+    Chat history: {chat_history}
 
-# If the user types a message, add it to the chat history
-if user_query:
-    st.session_state.chat_history.append({"user": user_query})
-    # Simulate a response (replace this with your custom response logic)
-    st.session_state.chat_history.append({"response": "Thank you for your message!"})
+    User question: {user_question}
+    """
+    prompt = ChatPromptTemplate.from_template(template)
 
-# Display chat history in the sidebar
-st.sidebar.header("Chat")
-for chat in st.session_state.chat_history:
-    if 'user' in chat:
-        st.sidebar.markdown(f"**You:** {chat['user']}")
-    if 'response' in chat:
-        st.sidebar.markdown(f"**Bot:** {chat['response']}")
+    # Using LM Studio Local Inference Server
+    llm = ChatOpenAI(base_url="http://localhost:1234/v1")
+
+    chain = prompt | llm | StrOutputParser()
+    
+    return chain.stream({
+        "chat_history": chat_history,
+        "user_question": user_query,
+    })
+
+# Session state for chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = [
+        AIMessage(content="Hello, I am a bot. How can I help you?"),
+    ]
+
+# Display conversation history in the sidebar
+st.sidebar.header("Chat with the Assistant")
+for message in st.session_state.chat_history:
+    if isinstance(message, AIMessage):
+        with st.sidebar.chat_message("AI"):
+            st.sidebar.write(message.content)
+    elif isinstance(message, HumanMessage):
+        with st.sidebar.chat_message("Human"):
+            st.sidebar.write(message.content)
+
+# User input for the chat
+user_query = st.sidebar.chat_input("Type your message here...")
+if user_query is not None and user_query != "":
+    st.session_state.chat_history.append(HumanMessage(content=user_query))
+
+    with st.sidebar.chat_message("Human"):
+        st.sidebar.markdown(user_query)
+
+    with st.sidebar.chat_message("AI"):
+        response = st.sidebar.write_stream(get_response(user_query, st.session_state.chat_history))
+
+    st.session_state.chat_history.append(AIMessage(content=response))
