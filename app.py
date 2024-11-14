@@ -2,6 +2,13 @@
 from pathlib import Path
 import PIL
 
+#Streamlit Streaming using LM Studio as OpenAI Standin
+import streamlit as st
+from langchain_core.messages import AIMessage, HumanMessage
+from langchain_openai import ChatOpenAI
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+
 # External packages
 import streamlit as st
 
@@ -16,6 +23,12 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Setting chat history
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = [
+        AIMessage(content="Hello, I am a bot. How can I help you?"),
+    ]
 
 # Main page heading
 st.title("Object Detection")
@@ -93,3 +106,27 @@ elif source_radio == settings.WEBCAM:
 
 else:
     st.error("Please select a valid source type!")
+
+
+
+
+# Display the chat input widget
+user_query = st.sidebar.chat_input("Type your message here")
+
+# Container to display chat history
+if 'chat_history' not in st.session_state:
+    st.session_state.chat_history = []
+
+# If the user types a message, add it to the chat history
+if user_query:
+    st.session_state.chat_history.append({"user": user_query})
+    # Simulate a response (replace this with your custom response logic)
+    st.session_state.chat_history.append({"response": "Thank you for your message!"})
+
+# Display chat history in the sidebar
+st.sidebar.header("Chat")
+for chat in st.session_state.chat_history:
+    if 'user' in chat:
+        st.sidebar.markdown(f"**You:** {chat['user']}")
+    if 'response' in chat:
+        st.sidebar.markdown(f"**Bot:** {chat['response']}")
