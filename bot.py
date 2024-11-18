@@ -5,9 +5,15 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 import requests
 
+from modal import model_configuration_modal  # Import the modal function
+
 # Main page heading
 st.title("Object Detection")
 
+# Button to open the model configuration modal
+if st.button("Open Model Configuration"):
+    # When the button is clicked, call the modal function
+    model_configuration_modal()
 
 # Sidebar
 st.sidebar.header("LM Studio Streaming Chatbot")
@@ -95,3 +101,7 @@ with st.sidebar:
             st.write(response)  # Use st.write instead of st.write_stream
 
         st.session_state.chat_history.append(AIMessage(content=response))
+
+st.sidebar.header("Image/Video Config")
+source_radio = st.sidebar.radio(
+    "Select Source", settings.SOURCES_LIST)
