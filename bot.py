@@ -5,6 +5,9 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 import requests
 
+# Main page heading
+st.title("Object Detection")
+
 
 # Sidebar
 st.sidebar.header("LM Studio Streaming Chatbot")
