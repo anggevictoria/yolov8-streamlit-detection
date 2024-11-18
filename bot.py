@@ -15,6 +15,8 @@ if st.button("Open Model Configuration"):
     # When the button is clicked, call the modal function
     model_configuration_modal()
 
+
+
 # Sidebar
 st.sidebar.header("LM Studio Streaming Chatbot")
 
