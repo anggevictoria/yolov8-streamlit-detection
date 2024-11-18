@@ -28,20 +28,25 @@ st.set_page_config(
 # Main page heading
 st.title("Object Detection")
 
-# Model Configuration
-st.header("ML Model Config")
-confidence = float(st.slider(
-    "Select Model Confidence", 25, 100, 40)) / 100
+# Model Configuration in a Modal-like Component
+with st.expander("⚙️ ML Model Configuration", expanded=False):
+    st.subheader("Configure the Model")
+    confidence = float(st.slider(
+        "Select Model Confidence", 25, 100, 40)) / 100
 
-# Load Detection Model Only
-model_path = Path(settings.DETECTION_MODEL)
+    st.write(f"**Selected Confidence**: {confidence * 100}%")
 
-# Load Pre-trained ML Model
-try:
-    model = helper.load_model(model_path)
-except Exception as ex:
-    st.error(f"Unable to load model. Check the specified path: {model_path}")
-    st.error(ex)
+    # Load Detection Model Only
+    model_path = Path(settings.DETECTION_MODEL)
+
+    # Load Pre-trained ML Model
+    try:
+        model = helper.load_model(model_path)
+        st.success("Model successfully loaded!")
+    except Exception as ex:
+        st.error(f"Unable to load model. Check the specified path: {model_path}")
+        st.error(ex)
+
 
 # Image/Video Configuration
 st.header("Image/Video Config")
