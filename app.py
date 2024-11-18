@@ -2,7 +2,7 @@
 from pathlib import Path
 import PIL
 
-#Streamlit Streaming using LM Studio as OpenAI Standin
+# Streamlit Streaming using LM Studio as OpenAI Standing
 import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_openai import ChatOpenAI
@@ -24,16 +24,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Setting chat history
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = [
-        AIMessage(content="Hello, I am a bot. How can I help you?"),
-    ]
-
 # Main page heading
 st.title("Object Detection")
 
-# Sidebar
+# Sidebar - ML Model Configuration
 st.sidebar.header("ML Model Config")
 
 # Model Confidence Slider
@@ -50,6 +44,7 @@ except Exception as ex:
     st.error(f"Unable to load model. Check the specified path: {model_path}")
     st.error(ex)
 
+# Sidebar - Image/Video Configuration
 st.sidebar.header("Image/Video Config")
 source_radio = st.sidebar.radio(
     "Select Source", settings.SOURCES_LIST)
@@ -107,8 +102,6 @@ elif source_radio == settings.WEBCAM:
 else:
     st.error("Please select a valid source type!")
 
-
-
 # Add a space to separate sections visually
 st.sidebar.markdown("---")
 
@@ -128,9 +121,8 @@ def get_response(user_query, chat_history):
     # Using LM Studio Local Inference Server
     llm = ChatOpenAI(api_key="YOUR_API_KEY", base_url="http://localhost:1234/v1/completion")
 
-
     chain = prompt | llm | StrOutputParser()
-    
+
     return chain.stream({
         "chat_history": chat_history,
         "user_question": user_query,
@@ -142,8 +134,10 @@ if "chat_history" not in st.session_state:
         AIMessage(content="Hello, I am a bot. How can I help you?"),
     ]
 
-# Display conversation history in the sidebar
+# Sidebar - Chat with Assistant
 st.sidebar.header("Chat with the Assistant")
+
+# Display conversation history in the sidebar
 for message in st.session_state.chat_history:
     if isinstance(message, AIMessage):
         with st.sidebar.chat_message("AI"):
@@ -156,17 +150,16 @@ for message in st.session_state.chat_history:
 user_query = st.sidebar.chat_input("Type your message here...")
 
 if user_query:
-    # Set up the chat model
-    chat = ChatOpenAI(model="gemma-2-2b-it", temperature=0.7)
-
-    # Create a chat prompt and generate response
-    chat_prompt = ChatPromptTemplate.from_messages([HumanMessage(content=user_query)])
-    response = chat(chat_prompt)
-
-    # Append to chat history and display
+    # Append user query to the chat history
     st.session_state.chat_history.append(HumanMessage(content=user_query))
-    st.session_state.chat_history.append(AIMessage(content=response.content))
 
+    # Generate a response using the chat model
+    response = get_response(user_query, st.session_state.chat_history)
+
+    # Append the AI's response to the chat history
+    st.session_state.chat_history.append(AIMessage(content=response))
+
+    # Display the conversation
     for message in st.session_state.chat_history:
         if isinstance(message, HumanMessage):
             st.text(f"You: {message.content}")
