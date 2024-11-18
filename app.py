@@ -24,12 +24,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Setting chat history
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = [
-        AIMessage(content="Hello, I am a bot. How can I help you?"),
-    ]
-
 # Main page heading
 st.title("Object Detection")
 
@@ -109,36 +103,4 @@ else:
 
 
 
-# Add a space to separate sections visually
-st.sidebar.markdown("---")
-
-# Function to handle user queries and chat response
-def get_response(user_query, chat_history):
-
-    template = """
-    You are a helpful assistant. Answer the following questions considering the history of the conversation:
-
-    Chat history: {chat_history}
-
-    User question: {user_question}
-    """
-
-    prompt = ChatPromptTemplate.from_template(template)
-
-    # Using LM Studio Local Inference Server
-    llm = ChatOpenAI(api_key="YOUR_API_KEY", base_url="http://localhost:1234/v1/completion")
-
-
-    chain = prompt | llm | StrOutputParser()
-    
-    return chain.stream({
-        "chat_history": chat_history,
-        "user_question": user_query,
-    })
-
-# Session state for chat history
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = [
-        AIMessage(content="Hello, I am a bot. How can I help you?"),
-    ]
 
