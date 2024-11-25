@@ -116,12 +116,18 @@ if source_radio == settings.IMAGE:
                 # Print the list
                 st.write("Detected Objects (List):", detected_objects_list)
 
+                # Empty the set after conversion
+                detected_objects_set.clear()
+
+                st.write("Detected Objects (Set):", detected_objects_set)
+
                 if detected_objects_list:
                     st.write("Detected Objects:")
                     
                     # Iterate and pop the first element of the list in each iteration
                     while detected_objects_list:
                         current_object = detected_objects_list.pop(0)  # Pop the first element
+                        st.write("Detected Objects (List):", detected_objects_list)
                         st.write(f"Processing: {current_object}")
                 else:
                     st.write("No objects detected.")
