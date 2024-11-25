@@ -113,8 +113,8 @@ if source_radio == settings.IMAGE:
                 # Convert set to list for ordered iteration and popping
                 detected_objects_list = list(detected_objects_set)
 
-                # Print the list
-                st.write("Detected Objects (List):", detected_objects_list)
+                # Print the list for checking detectedd items
+                #st.write("Detected Objects (List):", detected_objects_list)
 
                 # Empty the set after conversion
                 detected_objects_set.clear()
