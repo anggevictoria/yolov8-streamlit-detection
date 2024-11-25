@@ -3,6 +3,7 @@ import streamlit as st
 import cv2
 import settings
 import requests
+import time
 
 def load_model(model_path):
     model = YOLO(model_path)
@@ -26,20 +27,27 @@ def _display_detected_frames(conf, model, st_frame, image):
     # Display the image with detected objects
     st_frame.image(res_plotted, caption='Detected Video', channels="BGR", use_container_width=True)
 
-    # Extract detected object names
+    # Extract detected object names every 3 seconds
     object_names = set()
     boxes = res[0].boxes  # Access detected boxes (if available)
-    if boxes:
-        for box in boxes:
-            class_id = int(box.cls)  # Get the class ID of the object
-            object_name = model.names[class_id]  # Map class ID to object name
-            object_names.add(object_name)
+    
+    current_time = time.time()  # Get current time
+    if current_time - _display_detected_frames.last_execution_time > 5:  # Check if 3 seconds have passed
+        _display_detected_frames.last_execution_time = current_time  # Update the last execution time
 
-            st.write(f"{object_names}")
+        if boxes:
+            for box in boxes:
+                class_id = int(box.cls)  # Get the class ID of the object
+                object_name = model.names[class_id]  # Map class ID to object name
+                if object_name not in object_names:  # Check if the name is already in the set
+                    object_names.add(object_name)  # Add to the set
+
+        st.write(f"Detected Objects(Set): {object_names}")  # Display the detected objects in Streamlit
 
     return object_names
-    
-    
+
+# Initialize the last execution time attribute for the function
+_display_detected_frames.last_execution_time = 0  # First execution is allowed immediately
 
 
 def play_webcam(conf, model):
@@ -47,7 +55,6 @@ def play_webcam(conf, model):
     if st.button('Detect Objects'):
             vid_cap = cv2.VideoCapture(source_webcam)
             st_frame = st.empty()
-            detected_objects = set()  # Initialize a set to store unique object names
 
             while vid_cap.isOpened():
                 
@@ -58,17 +65,6 @@ def play_webcam(conf, model):
                 else:
                     vid_cap.release()
                     break
-
-# extract the name of detected object
-def get_detected_object_names(boxes, class_names):
-    detected_objects = set()
-    for box in boxes:
-        class_id = int(box.cls)
-        
-        # Map class ID to object name
-        object_name = class_names[class_id]
-        detected_objects.add(object_name)
-    return detected_objects
 
 # Function to generate a description
 def generate_description(object_name: str) -> str:
