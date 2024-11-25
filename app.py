@@ -9,6 +9,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 import requests
+import time
 
 # External packages
 import streamlit as st
@@ -85,34 +86,62 @@ if source_radio == settings.IMAGE:
             st.image(default_detected_image_path, caption='Detected Image',
                      use_container_width=True)
         else:
-            if st.button('Detect Objects'):
-                res = model.predict(uploaded_image,
+            res = model.predict(uploaded_image,
                                     conf=confidence
                                     )
-                boxes = res[0].boxes
-                res_plotted = res[0].plot()[:, :, ::-1]
-                st.image(res_plotted, caption='Detected Image',
-                         use_container_width=True)
+            boxes = res[0].boxes
+            res_plotted = res[0].plot()[:, :, ::-1]
+            st.image(res_plotted, caption='Detected Image',
+                    use_container_width=True)
+
+
+            # Initialize an empty set to store unique detected objects
+            detected_objects_set = set()
+
+            # Process detected boxes
+            try:
+                for box in boxes:
+                    # Extract relevant information from the detection box
+                    x1, y1, x2, y2, confidence, class_id = box.data[0][:6]
+                    object_name = model.names[int(class_id)]  # Map class ID to name
+
+                    detected_objects_set.add(object_name)  # Add object name to the set to ensure uniqueness
                 
-                detected_objects = set()  # Initialize an empty set to track detected object names
+                # Print the set
+                #st.write("Detected Objects (Set):", detected_objects_set)
 
-                try:
-                    for box in boxes:
-                        # Extract relevant information from the detection box
-                        x1, y1, x2, y2, confidence, class_id = box.data[0][:6]  # Adjust indices if `box.data` has a different structure
-                        object_name = model.names[int(class_id)]  # Map class ID to name
+                # Convert set to list for ordered iteration and popping
+                detected_objects_list = list(detected_objects_set)
 
-                        if object_name in detected_objects:
-                            continue
+                # Print the list
+                st.write("Detected Objects (List):", detected_objects_list)
 
-                        #add the object to the set and process
-                        detected_objects.add(object_name)            
-                        description = helper.generate_description(object_name)
-                        st.write(f"{object_name} detected: {description}")
+                # Empty the set after conversion
+                detected_objects_set.clear()
+
+                #st.write("Detected Objects (Set):", detected_objects_set)
+
+                if detected_objects_list:                    
+                    # Iterate and pop the first element of the list in each iteration
+                    while detected_objects_list:
+                        current_object = detected_objects_list.pop(0)  # Storing in variable and Pop the first element
+                        #st.write("Detected Objects (List):", detected_objects_list)
+                        #st.write(f"Processing: {current_object}")
+
+                        description = helper.generate_description(current_object)
+
+                        #empty container to hold the message
+                        msg = st.empty()
+
+                        msg.write(f"{current_object} detected: {description}")
+                        time.sleep(3)
+                        msg.empty()
+                else:
+                    st.write("No objects detected.")
+            except Exception as ex:
+                st.write("No image is uploaded yet!")
+
                 
-                        
-                except Exception as ex:
-                    st.write("No image is uploaded yet!")
 
 elif source_radio == settings.WEBCAM:
     helper.play_webcam(confidence, model)
