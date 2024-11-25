@@ -25,6 +25,19 @@ def _display_detected_frames(conf, model, st_frame, image):
 
     # Display the image with detected objects
     st_frame.image(res_plotted, caption='Detected Video', channels="BGR", use_container_width=True)
+
+    # Extract detected object names
+    object_names = set()
+    boxes = res[0].boxes  # Access detected boxes (if available)
+    if boxes:
+        for box in boxes:
+            class_id = int(box.cls)  # Get the class ID of the object
+            object_name = model.names[class_id]  # Map class ID to object name
+            object_names.add(object_name)
+
+            st.write(f"{object_names}")
+
+    return object_names
     
     
 
