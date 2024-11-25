@@ -93,43 +93,41 @@ if source_radio == settings.IMAGE:
             res_plotted = res[0].plot()[:, :, ::-1]
             st.image(res_plotted, caption='Detected Image',
                     use_container_width=True)
-                    
-            detected_objects_list = [] # Initialize a list to keep the order of detections
 
 
+            # Initialize an empty set to store unique detected objects
+            detected_objects_set = set()
+
+            # Process detected boxes
             try:
                 for box in boxes:
-                                # Extract relevant information from the detection box
-                                x1, y1, x2, y2, confidence, class_id = box.data[0][:6]  # Adjust indices if `box.data` has a different structure
-                                object_name = model.names[int(class_id)]  # Map class ID to name
+                    # Extract relevant information from the detection box
+                    x1, y1, x2, y2, confidence, class_id = box.data[0][:6]
+                    object_name = model.names[int(class_id)]  # Map class ID to name
 
-                                if object_name not in detected_objects_list:
-                                    #add the object to the set and process
-                                    detected_objects_list.append(object_name) # Add the object to the list at the last position
+                    detected_objects_set.add(object_name)  # Add object name to the set to ensure uniqueness
+                
+                # Print the set
+                st.write("Detected Objects (Set):", detected_objects_set)
 
-                                else:
-                                    continue
+                # Convert set to list for ordered iteration and popping
+                detected_objects_list = list(detected_objects_set)
 
-                                # Use the first item in the list (the first detected object)
-                                first_detected_object = detected_objects_list[0]
-                                description = helper.generate_description(first_detected_object)
-                               
-                                # Empty container to hold the message
-                                msg_container = st.empty()    
-        
-                                msg_container.write(f"{first_detected_object} detected: {description}. Ask Streaming chatbot if you want to know more about {detected_objects_list[0]}")
-                                time.sleep(3)  # Wait for 3 seconds before clearing the message
-                                msg_container.empty()  # Remove the message after 3 seconds
+                # Print the list
+                st.write("Detected Objects (List):", detected_objects_list)
 
-                                # Remove the first item from the set and list after processing
-                                detected_objects_list.pop(0)  # Remove the first item in the list
-
-
-
-                                                        
-                                
+                if detected_objects_list:
+                    st.write("Detected Objects:")
+                    
+                    # Iterate and pop the first element of the list in each iteration
+                    while detected_objects_list:
+                        current_object = detected_objects_list.pop(0)  # Pop the first element
+                        st.write(f"Processing: {current_object}")
+                else:
+                    st.write("No objects detected.")
             except Exception as ex:
-                st.write("No image is uploaded yet!")        
+                st.write("No image is uploaded yet!")
+
                 
 
 elif source_radio == settings.WEBCAM:
