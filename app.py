@@ -9,6 +9,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 import requests
+import time
 
 # External packages
 import streamlit as st
@@ -85,34 +86,34 @@ if source_radio == settings.IMAGE:
             st.image(default_detected_image_path, caption='Detected Image',
                      use_container_width=True)
         else:
-            if st.button('Detect Objects'):
-                res = model.predict(uploaded_image,
+            res = model.predict(uploaded_image,
                                     conf=confidence
                                     )
-                boxes = res[0].boxes
-                res_plotted = res[0].plot()[:, :, ::-1]
-                st.image(res_plotted, caption='Detected Image',
-                         use_container_width=True)
-                
-                detected_objects = set()  # Initialize an empty set to track detected object names
+            boxes = res[0].boxes
+            res_plotted = res[0].plot()[:, :, ::-1]
+            st.image(res_plotted, caption='Detected Image',
+                    use_container_width=True)
+                    
+            detected_objects = set()  # Initialize an empty set to track detected object names
 
-                try:
-                    for box in boxes:
-                        # Extract relevant information from the detection box
-                        x1, y1, x2, y2, confidence, class_id = box.data[0][:6]  # Adjust indices if `box.data` has a different structure
-                        object_name = model.names[int(class_id)]  # Map class ID to name
+            try:
+                for box in boxes:
+                                # Extract relevant information from the detection box
+                                x1, y1, x2, y2, confidence, class_id = box.data[0][:6]  # Adjust indices if `box.data` has a different structure
+                                object_name = model.names[int(class_id)]  # Map class ID to name
 
-                        if object_name in detected_objects:
-                            continue
+                                if object_name in detected_objects:
+                                    continue
 
-                        #add the object to the set and process
-                        detected_objects.add(object_name)            
-                        description = helper.generate_description(object_name)
-                        st.write(f"{object_name} detected: {description}")
-                
+                                #add the object to the set and process
+                                detected_objects.add(object_name)            
+                                description = helper.generate_description(object_name)
+                                st.write(f"{object_name} detected: {description}. Ask our streaming chatbot if you want to know more about {object_name}")
                         
-                except Exception as ex:
-                    st.write("No image is uploaded yet!")
+                                
+            except Exception as ex:
+                st.write("No image is uploaded yet!")        
+                
 
 elif source_radio == settings.WEBCAM:
     helper.play_webcam(confidence, model)
