@@ -28,7 +28,7 @@ def _display_detected_frames(conf, model, st_frame, image):
     st_frame.image(res_plotted, caption='Detected Video', channels="BGR", use_container_width=True)
 
     # Extract detected object names every 3 seconds
-    object_names = set()
+    object_names_set = set()
     boxes = res[0].boxes  # Access detected boxes (if available)
     
     current_time = time.time()  # Get current time
@@ -39,12 +39,19 @@ def _display_detected_frames(conf, model, st_frame, image):
             for box in boxes:
                 class_id = int(box.cls)  # Get the class ID of the object
                 object_name = model.names[class_id]  # Map class ID to object name
-                if object_name not in object_names:  # Check if the name is already in the set
-                    object_names.add(object_name)  # Add to the set
+                if object_name not in object_names_set:  # Check if the name is already in the set
+                    object_names_set.add(object_name)  # Add to the set
+                st.write(f"Detected Objects (Set): {object_names_set}")
+                
+                object_names_list = list(object_names_set) #convert set to list for order
+                
+                object_names_set.clear()
+                st.write(f"Detected Objects (Set): {object_names_set}")
+                st.write(f"Detected Objects (List): {object_names_list}")
+                
+        st.write(f"Detected Objects(Set): {object_names_set}")  # Display the detected objects in Streamlit
 
-        st.write(f"Detected Objects(Set): {object_names}")  # Display the detected objects in Streamlit
-
-    return object_names
+    return object_names_set
 
 # Initialize the last execution time attribute for the function
 _display_detected_frames.last_execution_time = 0  # First execution is allowed immediately
