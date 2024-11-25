@@ -108,7 +108,7 @@ if source_radio == settings.IMAGE:
                     detected_objects_set.add(object_name)  # Add object name to the set to ensure uniqueness
                 
                 # Print the set
-                st.write("Detected Objects (Set):", detected_objects_set)
+                #st.write("Detected Objects (Set):", detected_objects_set)
 
                 # Convert set to list for ordered iteration and popping
                 detected_objects_list = list(detected_objects_set)
@@ -119,16 +119,23 @@ if source_radio == settings.IMAGE:
                 # Empty the set after conversion
                 detected_objects_set.clear()
 
-                st.write("Detected Objects (Set):", detected_objects_set)
+                #st.write("Detected Objects (Set):", detected_objects_set)
 
-                if detected_objects_list:
-                    st.write("Detected Objects:")
-                    
+                if detected_objects_list:                    
                     # Iterate and pop the first element of the list in each iteration
                     while detected_objects_list:
-                        current_object = detected_objects_list.pop(0)  # Pop the first element
-                        st.write("Detected Objects (List):", detected_objects_list)
-                        st.write(f"Processing: {current_object}")
+                        current_object = detected_objects_list.pop(0)  # Storing in variable and Pop the first element
+                        #st.write("Detected Objects (List):", detected_objects_list)
+                        #st.write(f"Processing: {current_object}")
+
+                        description = helper.generate_description(current_object)
+
+                        #empty container to hold the message
+                        msg = st.empty()
+
+                        msg.write(f"{current_object} detected: {description}")
+                        time.sleep(3)
+                        msg.empty()
                 else:
                     st.write("No objects detected.")
             except Exception as ex:
