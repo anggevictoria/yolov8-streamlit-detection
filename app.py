@@ -26,7 +26,7 @@ st.set_page_config(
 )
 
 # Main page heading
-st.title("Object Detection")
+st.title("VisionBot")
 
 # Model Configuration in a Modal-like Component
 with st.expander("⚙️ ML Model Configuration", expanded=False):
@@ -93,10 +93,24 @@ if source_radio == settings.IMAGE:
                 res_plotted = res[0].plot()[:, :, ::-1]
                 st.image(res_plotted, caption='Detected Image',
                          use_container_width=True)
+                
+                detected_objects = set()  # Initialize an empty set to track detected object names
+
                 try:
-                    with st.expander("Detection Results"):
-                        for box in boxes:
-                            st.write(box.data)
+                    for box in boxes:
+                        # Extract relevant information from the detection box
+                        x1, y1, x2, y2, confidence, class_id = box.data[0][:6]  # Adjust indices if `box.data` has a different structure
+                        object_name = model.names[int(class_id)]  # Map class ID to name
+
+                        if object_name in detected_objects:
+                            continue
+
+                        #add the object to the set and process
+                        detected_objects.add(object_name)            
+                        description = helper.generate_description(object_name)
+                        st.write(f"{object_name} detected: {description}")
+                
+                        
                 except Exception as ex:
                     st.write("No image is uploaded yet!")
 
@@ -105,12 +119,6 @@ elif source_radio == settings.WEBCAM:
 
 else:
     st.error("Please select a valid source.")
-
-
-
-
-
-
 
 
 # Sidebar
@@ -174,7 +182,7 @@ user_query = st.sidebar.text_input("Type your message here...")
 # session state
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = [
-        AIMessage(content="Hello, I am a bot. How can I help you?"),
+        AIMessage(content="Hello, I am VisionBot. How can I help you?"),
     ]
 
 # Sidebar for displaying conversation history
