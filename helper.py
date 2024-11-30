@@ -39,22 +39,22 @@ def _display_detected_frames(conf, model, st_frame, image):
             for box in boxes:
                 class_id = int(box.cls)  # Get the class ID of the object
                 object_name = model.names[class_id]  # Map class ID to object name
-                if object_name not in object_names_set:  # Check if the name is already in the set
-                    object_names_set.add(object_name)  # Add to the set
-                st.write(f"Detected Objects (Set): {object_names_set}")
+
+            description = generate_description(object_name)
+
+            msg = st.empty()
+
+            msg.write(f"{current_object} detected: {description}")
+            time.sleep(3)
+            
+            msg.empty()
                 
-                object_names_list = list(object_names_set) #convert set to list for order
                 
-                object_names_set.clear()
-                st.write(f"Detected Objects (Set): {object_names_set}")
-                st.write(f"Detected Objects (List): {object_names_list}")
-                
-        st.write(f"Detected Objects(Set): {object_names_set}")  # Display the detected objects in Streamlit
 
     return object_names_set
 
 # Initialize the last execution time attribute for the function
-_display_detected_frames.last_execution_time = 0  # First execution is allowed immediately
+_display_detected_frames.last_execution_time = 0  # First execution is allowed immediately-
 
 
 def play_webcam(conf, model):
