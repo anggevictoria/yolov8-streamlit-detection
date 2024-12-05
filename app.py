@@ -145,7 +145,7 @@ if source_radio == settings.IMAGE:
 elif source_radio == settings.VIDEO:
     helper.play_stored_video(confidence, model)
 
-    
+
 elif source_radio == settings.WEBCAM:
     helper.play_webcam(confidence, model)
 
