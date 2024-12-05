@@ -101,7 +101,6 @@ def play_webcam(conf, model):
         None
     """
     source_webcam = settings.WEBCAM_PATH
-    is_display_tracker, tracker = display_tracker_options()
     if st.sidebar.button('Detect Objects'):
         try:
             vid_cap = cv2.VideoCapture(source_webcam)
@@ -112,9 +111,7 @@ def play_webcam(conf, model):
                     _display_detected_frames(conf,
                                              model,
                                              st_frame,
-                                             image,
-                                             is_display_tracker,
-                                             tracker,
+                                             image                                         
                                              )
                 else:
                     vid_cap.release()
