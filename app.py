@@ -113,8 +113,8 @@ if source_radio == settings.IMAGE:
                 # Convert set to list for ordered iteration and popping
                 detected_objects_list = list(detected_objects_set)
 
-                # Print the list
-                st.write("Detected Objects (List):", detected_objects_list)
+                # Print the list for checking detectedd items
+                #st.write("Detected Objects (List):", detected_objects_list)
 
                 # Empty the set after conversion
                 detected_objects_set.clear()
@@ -142,9 +142,13 @@ if source_radio == settings.IMAGE:
                 st.write("No image is uploaded yet!")
 
                 
+elif source_radio == settings.VIDEO:
+    helper.play_stored_video(confidence, model)
+
 
 elif source_radio == settings.WEBCAM:
     helper.play_webcam(confidence, model)
+
 
 else:
     st.error("Please select a valid source.")
